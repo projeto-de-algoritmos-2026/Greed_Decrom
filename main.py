@@ -216,6 +216,7 @@ def main():
 
     if a.DEBUG:
         DEBUG_PRINT_ARGUMENTS(a)
+        print()
         DEBUG_PRINT_SYMBOLS(symbols)
      
 
