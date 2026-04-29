@@ -158,7 +158,7 @@ def main():
     #   o valor a ser convertido está em `a.input` (precisa converter para float)
     #   além você só deve precisar usar `a.lowercase`, `a.unicode`, `a.please_jupiter`, `a.nulla`, `a.clock` e `a.implied_fractions` (TODOS SÃO BOOLEANOS)
     #   de uma olhada no -h para saber o que cada uma faz, qualquer dúvida pode perguntar
-    #   para o `a.implied_fractions`, o último símbolo deve estar riscado. faça assim: color.CROSS + simbolo + color.RESET
+    #   para o `a.implied_fractions`, arredonde o número para cima e risque o último símbolo. faça assim: color.CROSS + simbolo + color.RESET
     #
     #   lista de símbolos está na variável symbols(em ordem decrescente do valor)
     #   para saber o valor de um símbolo use `symbol[ind]['valor']`
