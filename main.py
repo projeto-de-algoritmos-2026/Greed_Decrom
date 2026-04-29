@@ -43,7 +43,11 @@ def DEBUG_PRINT_SYMBOLS(listasimbolos):
 def DEBUG_PRINT_ARGUMENTS(args):
     print("ARGUMENTOS:")
     for k, v in vars(args).items():
-        if k not in ['input', 'export'] and v:
+        if k == 'input': continue
+
+        if (k == 'export' and v != None) or (k == 'max_largest' and v != 0):
+            print(k + '=' + v)
+        elif v:
             print(k)
 
 def cascade(argumentos, implicacoes): # propaga implicações
@@ -75,7 +79,7 @@ def main():
     parser = ArgumentParser(
         description=f"""Conversor de números decimais em algarismos romanos\n
         notas:\n
-         - o programa não limita o tamanho da entrada, isso pode resultar em longas repetições do maior símbolo (e.g. MMMMMMMMMMM = 11_000)\n
+         - o programa não limita o tamanho da entrada, isso pode resultar em longas repetições do maior símbolo (e.g. MMMMMMMMMMM = 11_000). veja {color.BOLD}--max-largest{color.BOLD_END}\n
          - duas maneiras de representar números grandes estão disponíveis: vinculum({color.BOLD}-v{color.BOLD_END}, {color.BOLD}-V{color.BOLD_END}) e apostrophus ({color.BOLD}-b{color.BOLD_END})""", 
         epilog='Criado por: Laisczt, Sunamit\nMaio de 2026', 
         formatter_class=RawTextHelpFormatter, 
@@ -84,25 +88,28 @@ def main():
     # Número de entrada
     parser.add_argument('input', help='number to be converted, in decimal notation')
 
-    # Argumentos posicionais
+    # Argumentos
     parser.add_argument('--export', help='exportar configurações de estilo pro arquivo')
+    parser.add_argument('--max-largest', default= 0, help='quantidade máxima de vezes que o maior símbolo pode ser repetido. Ao passar disso levanta exception\n *valor de 0 -> ilimitado\n *default: ilimitado')
 
     # Flags
+    parser.add_argument('--DEBUG', action='store_true', help='DEBUG PRINTS')
     parser.add_argument('-a', '--additive', action='store_true', help=f'utiliza a forma aditiva (e.g XXXX ao invés de XL)\n *implica {color.BOLD}-N{color.BOLD_END} e {color.BOLD}-F{color.BOLD_END}')
     parser.add_argument('-A', '--additive-long', action='store_true', help=f'exclui V,L,D,etc. (símbolos com valores decimais começando com 5), optando por usar a forma aditiva (e.g iiiiiii ao invés de 7)\n *implica {color.BOLD}-a{color.BOLD_END}\n *incompatível com {color.BOLD}-s{color.BOLD_END}, {color.BOLD}-S{color.BOLD_END}, {color.BOLD}-d{color.BOLD_END}')
     parser.add_argument('-f', '--additive-four', action='store_true', help='utiliza forma aditiva para representar o valor 4 (IIII)')
     parser.add_argument('-F', '--additive-fours', action='store_true', help=f'utiliza forma aditiva para representar os valores 4, 40, e 400\n *implica {color.BOLD}-f{color.BOLD_END}')
     parser.add_argument('-J', '--please-jupiter', action='store_true', help='utiliza a forma aditiva para representar o valor 4 (IIII), somente se a entrada for exatamente 4')
-    parser.add_argument('-n', '--additive-nine', action='store_true', help='utiliza forma aditiva para representar o valor 9 (VIIII)')
+    parser.add_argument('-n', '--additive-nine', action='store_true', help=f'utiliza forma aditiva para representar o valor 9 (VIIII)\n *incompatível com {color.BOLD}-S{color.BOLD_END}')
     parser.add_argument('-N', '--additive-nines', action='store_true', help=f'utiliza forma aditiva para representar os valores 9, 90, e 900\n *implica {color.BOLD}-n{color.BOLD_END}')
     parser.add_argument('-s', '--subtractive-forms', action='store_true', help=f'permite representações subtrativas não padrão (e.g IC, XM, XD)\n *incompatível com {color.BOLD}-A{color.BOLD_END}')
-    parser.add_argument('-S', '--subtractive-long', action='store_true', help=f'permite representações subtrativas com até 3 caractéres em sequência\n *incompatível com {color.BOLD}-A{color.BOLD_END}')
+    parser.add_argument('-S', '--subtractive-long', action='store_true', help=f'permite representações subtrativas com até 3 caractéres em sequência\n *incompatível com {color.BOLD}-A{color.BOLD_END} e {color.BOLD}-n{color.BOLD_END}')
     parser.add_argument('-d', '--subtractive-fives', action='store_true', help=f'permite que não-potências-de-cinco (V,L,D) sejam utilizados subtrativamente, com até 1 caractér em sequência\n *incompatível com {color.BOLD}-A{color.BOLD_END}')
-    parser.add_argument('-c', '--clock', action='store_true', help='caso a entrada seja de 1-12, utiliza caractéres utf8 dedicados')
-    parser.add_argument('-u', '--unicode', action='store_true', help=f'utiliza caractéres utf8 para símbolos latinos (quando possível). Exclui caracteres dedicados da notação apostrophus\n *veja {color.BOLD}-B{color.BOLD_END}({color.BOLD}--apostrophus-special{color.BOLD_END})')
+    parser.add_argument('-c', '--clock', action='store_true', help=f'caso a entrada seja de 1-12, utiliza caractéres utf8 dedicados\n *pode causar inconsistência com {color.BOLD}-j{color.BOLD_END}')
+    parser.add_argument('-u', '--unicode', action='store_true', help=f'utiliza caractéres utf8 para símbolos latinos (quando possível). Exclui caracteres dedicados da notação apostrophus\n *veja {color.BOLD}-B{color.BOLD_END}')
     parser.add_argument('-l', '--lowercase', action='store_true', help='utiliza versões minúsculas dos símbolos (onde possível)')
     parser.add_argument('-0', '--nulla', action='store_true', help='caso a entrada for 0, imprime a palavra Nulla (o comportamento padrão é imprimir N)')
-    parser.add_argument('-i', '--implied-fractions', action='store_true', help=f'não imprime parte fracional, mas risca o último dígito para indicar existência de fração (e.g {color.CROSS}I{color.BOLD_END},{color.CROSS}M{color.BOLD_END}) *incompatível com {color.BOLD}-r{color.BOLD_END} e {color.BOLD}-R{color.BOLD_END}')
+    parser.add_argument('-j', '--final-j', action='store_true', help=f'se o último símbolo inteiro for I, substitui por J\n *pode causar inconsistência com {color.BOLD}-c{color.BOLD_END}')
+    parser.add_argument('-i', '--implied-fractions', action='store_true', help=f'não imprime parte fracional, mas risca o último dígito para indicar existência de fração (e.g {color.CROSS}I{color.RESET},{color.CROSS}M{color.RESET})\n *incompatível com {color.BOLD}-r{color.BOLD_END} e {color.BOLD}-R{color.BOLD_END}')
     parser.add_argument('-r', '--limited-fractions', action='store_true', help='arredonda valores fracionais a frações de 12 (Uncias)')
     parser.add_argument('-R', '--expanded-fractions', action='store_true', help='não utiliza caractéres compactos para uncias')
     parser.add_argument('-v', '--vinculum', action='store_true', help=f'utiliza notação vinculum (aka titulum) para números grandes. Inclui multiplicação por 1000\n *veja também {color.BOLD}-V{color.BOLD_END}')
@@ -128,6 +135,18 @@ def main():
 
     a = parser.parse_args() # argumentos podem ser acessados com a.nomeArg
 
+    try:    # Verifica se a entrada é numérica
+        float(a.input)
+    except:
+        raise ValueError(f"Entrada deve ser numérica: {color.RED}{a.input}{color.PURPLE}")
+    
+    maxlisint = True
+    if(type(a.max_largest) != int):
+        maxlisint = a.max_largest.isdigit()
+    if not maxlisint:
+        raise ValueError(f"{color.BOLD}--max-largest{color.BOLD_END} deve ser número inteiro: {color.RED}{a.max_largest}{color.PURPLE}")
+
+
     cascade(a, implicacoes) # propaga implicações
     
     hasIncompat = checkIncompat(a, incompat)# checa se existem incompatibilidades entre flags
@@ -135,20 +154,19 @@ def main():
     if(hasIncompat): 
         raise ValueError(f"Opções incompatíveis: {color.BOLD + color.RED}{"--"+hasIncompat[0]}{color.BOLD_END + color.PURPLE}, {color.BOLD + color.RED}{"--"+hasIncompat[1]}{color.BOLD_END + color.PURPLE}")
 
-    try:    # Verifica se a entrada é numérica
-        float(a.input)
-    except:
-        raise ValueError(f"Entrada deve ser numérica: {color.RED}{a.input}{color.BOLD_END}")
 
 
     if(a.export): # exporta configurações de estilo à arquivo
         path = a.export
         if(os.path.isdir(path)):
-            raise ValueError(f"Caminho provido para export é um diretório: {color.RED}{a.export}{color.BOLD_END}")
+            raise ValueError(f"Caminho provido para export é um diretório: {color.RED}{a.export}{color.PURPLE}")
         
         with open(path, 'w') as f:
             for arg, val in vars(a).items():
-                if arg in ['input', 'export']: continue
+                if arg in ['input', 'export', 'DEBUG']: continue
+                if arg == 'max_largest' and val != 0:
+                    f.write("--" + arg.replace("_", '-') + "=" + val + "\n")
+                    continue
                 if not val: continue
                 f.write("--" + arg.replace("_", "-") + "\n")
 
@@ -161,7 +179,7 @@ def main():
     #
     #   argumentos podem ser acessados por a.nome_arg
     #   o valor a ser convertido está em `a.input` (precisa converter para float)
-    #   além você só deve precisar usar `a.lowercase`, `a.unicode`, `a.please_jupiter`, `a.nulla`, `a.clock` e `a.implied_fractions` (TODOS SÃO BOOLEANOS)
+    #   além desses, você só deve precisar usar `a.lowercase`, `a.unicode`, `a.please_jupiter`, `a.nulla`, `a.clock`, `a.implied_fractions` e 'a.final_j' (TODOS SÃO BOOLEANOS)
     #   de uma olhada no -h para saber o que cada uma faz, qualquer dúvida pode perguntar
     #   para o `a.implied_fractions`, arredonde o número para cima e risque o último símbolo. faça assim: color.CROSS + simbolo + color.BOLD_END
     #
@@ -196,8 +214,9 @@ def main():
     clock = getClockFace() # Lista de números de 1-12, use caso o usuário utilize a opção -c/--clock e se o valor de entrada seja de 1-12
     jupiter = getPleaseJupiter() # Lista contendo somente IIII, use caso o usuário utiliza a opção -j/--please-jupiter, e se o valor de entrada seja exatamente 4
 
-    DEBUG_PRINT_ARGUMENTS(a)
-    DEBUG_PRINT_SYMBOLS(symbols)
+    if a.DEBUG:
+        DEBUG_PRINT_ARGUMENTS(a)
+        DEBUG_PRINT_SYMBOLS(symbols)
      
 
 if __name__ == "__main__":
