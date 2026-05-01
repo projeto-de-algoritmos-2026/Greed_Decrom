@@ -1,7 +1,10 @@
 import sys
 import os
-from argparse import ArgumentParser, RawTextHelpFormatter
+from argparse import ArgumentParser, RawTextHelpFormatter, Action
 from symbols import *
+
+not_stored = ['export', 'input', 'DEBUG', 'additive']
+
 
 class color:
     BOLD = '\033[1m'
@@ -41,9 +44,11 @@ def DEBUG_PRINT_SYMBOLS(listasimbolos):
 
 def DEBUG_PRINT_ARGUMENTS(args):
     for k, v in vars(args).items():
-        if k == 'input': continue
+        if k in ['input', 'DEBUG']: continue
 
-        if (k == 'export' and v != None) or (k == 'max_largest' and v != 0):
+        if (k == 'export' and v != None):
+            print("--" + k + '=' + os.path.realpath(v))
+        elif (k == 'max_largest' and v != 0):
             print("--" + k + '=' + v)
         elif v:
             print("--" + k.replace("_", "-"))
@@ -75,6 +80,7 @@ def checkIncompat(argumentos, incompatibilidades):
 
 def main():
     parser = ArgumentParser(
+        prog='wir',
         description=
 f"""Conversor de números decimais em algarismos romanos\n
 notas:
@@ -95,7 +101,7 @@ notas:
 
     # Flags
     parser.add_argument('--DEBUG', action='store_true', help='DEBUG PRINTS')
-    parser.add_argument('-a', '--additive', action='store_true', help=f'utiliza a forma aditiva (e.g XXXX ao invés de XL)\n *implica {color.BOLD}-N{color.BOLD_END} e {color.BOLD}-F{color.BOLD_END}')
+    parser.add_argument('-a', '--additive', action='store_true', help=f'utiliza a forma aditiva (e.g XXXX ao invés de XL)\n *compõe {color.BOLD}-N{color.BOLD_END} e {color.BOLD}-F{color.BOLD_END}')
     parser.add_argument('-A', '--additive-long', action='store_true', help=f'exclui V,L,D,etc. (símbolos com valores decimais começando com 5), optando por usar a forma aditiva (e.g iiiiiii ao invés de 7)\n *implica {color.BOLD}-a{color.BOLD_END}\n *incompatível com {color.BOLD}-s{color.BOLD_END}, {color.BOLD}-S{color.BOLD_END}, {color.BOLD}-d{color.BOLD_END}')
     parser.add_argument('-f', '--additive-four', action='store_true', help='utiliza forma aditiva para representar o valor 4 (IIII)')
     parser.add_argument('-F', '--additive-fours', action='store_true', help=f'utiliza forma aditiva para representar os valores 4, 40, e 400\n *implica {color.BOLD}-f{color.BOLD_END}')
@@ -108,7 +114,7 @@ notas:
     parser.add_argument('-c', '--clock', action='store_true', help=f'caso a entrada seja de 1-12, utiliza caractéres utf8 dedicados\n *pode causar inconsistência com {color.BOLD}-j{color.BOLD_END}')
     parser.add_argument('-u', '--unicode', action='store_true', help=f'utiliza caractéres utf8 para símbolos latinos (quando possível). Exclui caracteres dedicados da notação apostrophus\n *veja {color.BOLD}-B{color.BOLD_END}')
     parser.add_argument('-l', '--lowercase', action='store_true', help='utiliza versões minúsculas dos símbolos (onde possível)')
-    parser.add_argument('-0', '--nulla', action='store_true', help='caso a entrada for 0, imprime a palavra Nulla (o comportamento padrão é imprimir N)')
+    parser.add_argument('-o', '--nulla', action='store_true', help='caso a entrada for 0, imprime a palavra Nulla (o comportamento padrão é imprimir N)')
     parser.add_argument('-j', '--final-j', action='store_true', help=f'se o último símbolo inteiro for I, substitui por J\n *pode causar inconsistência com {color.BOLD}-c{color.BOLD_END}')
     parser.add_argument('-i', '--implied-fractions', action='store_true', help=f'não imprime parte fracional, mas risca o último dígito para indicar existência da mesma (e.g {color.CROSS}I{color.RESET},{color.CROSS}M{color.RESET})\n *incompatível com {color.BOLD}-r{color.BOLD_END} e {color.BOLD}-R{color.BOLD_END}')
     parser.add_argument('-r', '--limited-fractions', action='store_true', help='arredonda valores fracionais a frações de 12 (Uncias)')
@@ -165,7 +171,7 @@ notas:
         
         with open(path, 'w') as f:
             for arg, val in vars(a).items():
-                if arg in ['input', 'export', 'DEBUG']: continue
+                if arg in not_stored : continue
                 if arg == 'max_largest' and val != 0:
                     f.write("--" + arg.replace("_", '-') + "=" + val + "\n")
                     continue
