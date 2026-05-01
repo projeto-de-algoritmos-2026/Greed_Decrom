@@ -151,9 +151,9 @@ def generateSymbols(
     if vinculum:
         tone =      [_thousandfy(one[0])]
         ttens =     [_thousandfy(t) for t in tens]
-        del(ttens[-1])
+        if vinculum_large: del(ttens[-1])
         tfives =    [_thousandfy(f) for f in fives]
-        if not additive_long: del(tfives[-1])
+        if not additive_long and vinculum_large: del(tfives[-1])
         tsymbols =  tone + ttens + tfives
         tsubs =     [_thousandfy(s) for s in subs if s['valor'] <= 50]
 
