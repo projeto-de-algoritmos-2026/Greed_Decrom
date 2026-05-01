@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from argparse import ArgumentParser, RawTextHelpFormatter, Action
 import os
 
@@ -48,7 +46,6 @@ def checkIncompat(argumentos, incompatibilidades):
 
 def parse_args():
     parser = ArgumentParser(
-        prog='decrom',
         description=
 f"""Conversor de números decimais em algarismos romanos\n
 notas:
