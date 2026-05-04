@@ -49,20 +49,20 @@ def parse_args():
         description=
 f"""Conversor de números decimais em algarismos romanos\n
 notas:
+    - por padrão, o programa não limita o tamanho da entrada (veja {color.BOLD}--max-largest{color.BOLD_END})
     - por padrão, se a entrada for inteira serão utilizados os símbolos da numeração romana padrão moderna
       - se a entrada for fracionária, a maior precisão possível será utilizada (veja {color.BOLD}-r{color.BOLD_END} e {color.BOLD}-i{color.BOLD_END})
-    - o programa não limita o tamanho da entrada, isso pode resultar em longas repetições do maior símbolo (e.g. MMMMMMMMMMM = 11_000). veja {color.BOLD}--max-largest{color.BOLD_END}
     - duas maneiras de representar números grandes estão disponíveis: vinculum({color.BOLD}-v{color.BOLD_END}, {color.BOLD}-V{color.BOLD_END}) e apostrophus ({color.BOLD}-b{color.BOLD_END})""", 
         epilog='Criado por: Laisczt, Sunamit\nMaio de 2026', 
         formatter_class=RawTextHelpFormatter, 
         fromfile_prefix_chars="@")
 
     # Número de entrada
-    parser.add_argument('input', help='number to be converted, in decimal notation')
+    parser.add_argument('input', type=float, help='number to be converted, in decimal notation')
 
     # Argumentos
     parser.add_argument('--export', help='exportar configurações de estilo pro arquivo')
-    parser.add_argument('--max-largest', default= 0, help='quantidade máxima de vezes que o maior símbolo pode ser repetido. Ao passar disso levanta runtime error\n *valor de 0 -> ilimitado\n *default: ilimitado')
+    parser.add_argument('--max-largest', type=int, default= 0, help='quantidade máxima de vezes que o maior símbolo pode ser repetido. Ao passar disso levanta runtime error\n *valor de 0 -> ilimitado\n *default: ilimitado')
 
     # Flags
     parser.add_argument('--DEBUG', action='store_true', help='DEBUG PRINTS')
@@ -76,7 +76,7 @@ notas:
     parser.add_argument('-s', '--subtractive-forms', action='store_true', help=f'permite representações subtrativas não padrão (e.g IC, XM, XD)\n *incompatível com {color.BOLD}-A{color.BOLD_END}')
     parser.add_argument('-S', '--subtractive-long', action='store_true', help=f'permite representações subtrativas com até 3 caractéres em sequência\n *incompatível com {color.BOLD}-A{color.BOLD_END} e {color.BOLD}-n{color.BOLD_END}')
     parser.add_argument('-d', '--subtractive-fives', action='store_true', help=f'permite que não-potências-de-cinco (V,L,D) sejam utilizados subtrativamente, com até 1 caractér em sequência\n *incompatível com {color.BOLD}-A{color.BOLD_END}\n *implica {color.BOLD}-s{color.BOLD_END}')
-    parser.add_argument('-c', '--clock', action='store_true', help=f'caso a entrada seja de 1-12, utiliza caractéres utf8 dedicados\n *pode causar inconsistência com {color.BOLD}-j{color.BOLD_END}')
+    parser.add_argument('-c', '--clock', action='store_true', help=f'caso a entrada seja de 1-12, utiliza caractéres utf8 dedicados\n *pode causar inconsistência com {color.BOLD}-J{color.BOLD_END}')
     parser.add_argument('-u', '--unicode', action='store_true', help=f'utiliza caractéres utf8 para símbolos latinos (quando possível). Exclui caracteres dedicados da notação apostrophus\n *veja {color.BOLD}-B{color.BOLD_END}')
     parser.add_argument('-l', '--lowercase', action='store_true', help='utiliza versões minúsculas dos símbolos (onde possível)')
     parser.add_argument('-o', '--nulla', action='store_true', help='caso a entrada for 0, imprime a palavra Nulla (o comportamento padrão é imprimir N)')
@@ -107,18 +107,6 @@ notas:
     }
 
     a = parser.parse_args() # argumentos podem ser acessados com a.nomeArg
-
-    try:    # Verifica se a entrada é numérica
-        float(a.input)
-    except:
-        raise ValueError(f"Entrada deve ser numérica: {color.RED}{a.input}{color.PURPLE}")
-    
-    maxlisint = True
-    if(type(a.max_largest) != int):
-        maxlisint = a.max_largest.isdigit()
-    if not maxlisint:
-        raise ValueError(f"{color.BOLD}--max-largest{color.BOLD_END} deve ser número inteiro: {color.RED}{a.max_largest}{color.PURPLE}")
-
 
     cascade(a, implicacoes) # propaga implicações
     

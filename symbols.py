@@ -1,3 +1,15 @@
+def getPrintable(reps, lowercase, unicode):
+    if lowercase:
+        if unicode:
+            return reps[3]
+        else:
+            return reps[1]
+    else:
+        if unicode:
+            return reps[2]
+        else:
+            return reps[0]
+
 
 def _subtract(left, right, amount):
     value = right['valor'] - left['valor'] * amount
@@ -72,7 +84,7 @@ def generateSymbols(
     elif apostrophus:
         if not apostrophus_special:
             tens += [
-                {"valor": 1000, "reps":("CIↃ", "ciↄ", "ⅠↃ", "ⅰↄ")},
+                {"valor": 1000, "reps":("CIↃ", "ciↄ", "ⅭⅠↃ", "ⅽⅰↄ")},
                 {"valor": 10000, "reps":("CCIↃↃ", "cciↄↄ", "ⅭⅭⅠↃↃ ", "ⅽⅽⅰↄↄ")},
                 {"valor": 100000, "reps":("CCCIↃↃↃ", "ccciↄↄↄ", "ⅭⅭⅭⅠↃↃↃ ", "ⅽⅽⅽⅰↄↄↄ")}
             ]
@@ -109,10 +121,10 @@ def generateSymbols(
         for f in fives:
             if f['valor'] == one[0]['valor'] * 5:
                 if(additive_four): continue
-                subs += _subtract(one[0], f, 1)    
+                subs += _subtractUpTo(one[0], f, 1)    
                 continue
             if additive_nine or not subtractive_forms: break
-            subs += _subtract(one[0], f, 1)
+            subs += _subtractUpTo(one[0], f, 1 if not subtractive_long else 3)
         
         # subtract tens from tens
         if not additive_nines:
@@ -130,7 +142,7 @@ def generateSymbols(
                     continue
                 if f['valor'] < t['valor']: continue
                 if additive_nines or not subtractive_forms: break
-                subs += _subtract(t, f, 1)
+                subs += _subtractUpTo(t, f, 1 if not subtractive_long else 3)
 
         if subtractive_fives:
             # subtract fives from fives
@@ -292,7 +304,7 @@ def generateSymbols(
     return tuple(reversed(symbols))
 
 def getPleaseJupiter():
-    return ({"valor": 4, "reps":("IIII", "iiii", "ⅠⅠⅠⅠ", "ⅰⅰⅰⅰ")})
+    return tuple([{"valor": 4, "reps":("IIII", "iiii", "ⅠⅠⅠⅠ", "ⅰⅰⅰⅰ")}])
 
 def getClockFace():
     return (
@@ -319,6 +331,6 @@ def sesuncia(prevchar, lowercase):
         return ':' + ses
     if prevchar == '∷':
         return '∴' + ses
-    if prevchar == '⁙':
+    if prevchar == '⁙': #tecnicamente desnecessário
         return '∷' + ses
     return prevchar + ('Є' if not lowercase else 'є' )
