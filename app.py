@@ -8,7 +8,6 @@ import streamlit as st
 import engine
 from symbols import generateSymbols
 
-# --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
     page_title="Roman Converter Pro",
     page_icon="🏛️",
@@ -16,7 +15,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- ESTILIZAÇÃO CUSTOMIZADA (CSS) ---
 st.markdown("""
     <style>
     .main { background-color: #0e1117; }
@@ -41,17 +39,17 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- CLASSE DE COMPATIBILIDADE ---
+
 class ArgumentsMock:
     """Simula o objeto Namespace do argparse para compatibilidade com o engine."""
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
 def main():
-    st.title("🏛️ Conversor Romano Avançado")
+    st.title("Conversor Romano Avançado")
     st.markdown("---")
 
-    # --- LAYOUT PRINCIPAL ---
+
     col_input, col_settings = st.columns([1, 2])
 
     with col_input:
@@ -68,7 +66,7 @@ def main():
     with col_settings:
         st.subheader("Configurações de Algoritmo")
         
-        # Uso de abas para organizar as muitas flags
+
         tab_style, tab_logic, tab_large = st.tabs(["Estilo", "Lógica Aditiva", "Notações Antigas"])
 
         with tab_style:
@@ -91,7 +89,6 @@ def main():
             u_apos = st.checkbox("Apostrophus (-b)", help="Usa a notação clássica de C, I e Ɔ.")
             u_max = st.number_input("Limite de Repetição (M)", 0, 10, 0)
 
-    # --- PROCESSAMENTO ---
     st.markdown("---")
     if st.button("Executar Conversão"):
         # Mapeamento para o objeto de flags
@@ -122,7 +119,7 @@ def main():
         )
 
         try:
-            # 1. Gera os símbolos
+         
             symbols = generateSymbols(
                 args.apostrophus, args.apostrophus_special, args.vinculum, 
                 args.vinculum_large, False, args.additive_four, False, 
@@ -130,10 +127,10 @@ def main():
                 False, False, False, False, False
             )
             
-            # 2. Roda o Contador
+            
             res = engine.run_counter(decimal_val, symbols, args)
             
-            # 3. Exibe o Resultado
+         
             st.markdown(f"""
                 <div class="result-card">
                     <p style="margin:0; color:#808495; font-size:0.9rem;">RESULTADO DA CONVERSÃO</p>

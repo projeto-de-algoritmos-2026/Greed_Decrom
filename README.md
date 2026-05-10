@@ -34,11 +34,6 @@ O projeto integra as seguintes lógicas integradas ao front-end:
 * **Frações Unciais:** Decomposição de decimais em base 12 (Sextans, Quadrans, Semis), utilizando símbolos como pontos `·` e a letra `S`.
 * **Estética Tipográfica:** Flags para J-Final (uso de `J` no último caractere), Unicode dedicado e faces de relógio.
 
-## Screenshots
-*(Adicione aqui os prints da sua tela)*
-1. **Interface Web:** Demonstrando a conversão de um número decimal com frações.
-2. **Configurações:** Screenshot da sidebar com as flags ativadas.
-3. **Terminal:** Saída do programa via CLI com a flag `--DEBUG` ativada.
 
 ## Instalação 
 **Linguagem:** Python 3.10+<br>
