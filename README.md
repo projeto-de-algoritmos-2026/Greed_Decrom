@@ -74,7 +74,7 @@ Conversão: Clique no botão Executar Conversão. O resultado será exibido em u
 Para usuários que preferem o terminal ou precisam de saídas rápidas para scripts:
 
 ```bash
-python main.py [numero] [flags]
+python ./decrom.py [numero] [flags]
 ```
 -h: exibe todas as opções e informações adicionais
 
