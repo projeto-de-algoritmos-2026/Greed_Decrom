@@ -43,10 +43,10 @@ def run_counter(valor, symbols, a):
         while restante >= valor_s:
             contagem_maior += 1
             if a.max_largest != 0 and primeiro_simbolo and contagem_maior > a.max_largest:
-                raise RuntimeError(f"O maior símbolo foi repetido {contagem_maior} vezes, ultrapassando o limite de {a.max_largest}.")
+                raise RuntimeError(f"O valor inserido ultrapassou o limite: {cli.color.BOLD}--max-largest={a.max_largest}{cli.color.BOLD_END}.")
 
             if do_imply_fractions and restante - valor_s == 0:
-                resultado += cli.color.CROSS + rep + cli.color.RESET
+                resultado += cli.color.CROSS + rep + cli.color.CROSS_END
             else:
                 resultado += rep
             restante -= valor_s
@@ -61,7 +61,7 @@ def run_counter(valor, symbols, a):
 
     resultado = resultado.replace('||', '')
     resultado = resultado.replace('\033[55m\033[53m', '') 
-    resultado = resultado.replace('|\033[9m|', '\033[9m') 
+    # resultado = resultado.replace('|\033[9m|', '\033[9m') 
 
     # J final
     if a.final_j and resultado.endswith(('I', 'i', 'Ⅰ', 'ⅰ')):

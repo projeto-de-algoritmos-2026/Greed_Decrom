@@ -15,11 +15,14 @@ def ansi_to_html(text):
     Essencial para renderizar Vinculum (overline) e Implied Fractions (strike) na Web.
     """
    
+    text = text.replace('\033[1m', '<b">')
+    text = text.replace('\033[22m', '</b>')
+
     text = text.replace('\033[53m', '<span style="text-decoration: overline;">')
     text = text.replace('\033[55m', '</span>')
     
  
-    text = text.replace('\033[9m', '<span style="text-decoration: line-through; color: #FF4B4B;">')
+    text = text.replace('\033[9m', '<span style="text-decoration: line-through;">')
     text = text.replace('\033[0m', '</span>')
     
     return text
@@ -97,7 +100,8 @@ flags = AppFlags(
 if st.button("Executar Conversão"):
     try:
         export('./app_estilo.txt', flags)
-        resultado_raw = subprocess.run([sys.executable, './main.py', '@app_estilo.txt', str(input_num)], capture_output=True, text=True).stdout.strip()
+        resultado_raw = subprocess.run([sys.executable, './decrom.py', '@app_estilo.txt', str(input_num)], capture_output=True, text=True, check=True).stdout.strip()
+
 
         resultado_html = ansi_to_html(resultado_raw)
 
@@ -117,7 +121,30 @@ if st.button("Executar Conversão"):
         """, unsafe_allow_html=True)
 
     except Exception as e:
-        st.error(f"Erro no processamento: {e}")
+        msg = e.stderr
+
+        ind = msg.find("RuntimeError:")
+        if ind >= 0:
+            msg = msg[ind + 14:]
+        else:
+            ind = msg.find("ValueError:")
+            if ind >= 0:
+                msg = msg[ind + 12:]
+
+        st.error("Erro no processamento")
+
+        st.markdown(f"""
+            <div style="
+                background-color: #262730; 
+                padding: 30px; 
+                border-radius: 15px; 
+                border-left: 8px solid #FF4B4B;
+                margin-top: 20px;
+                text-align: center;">
+                <p style="font-family: 'serif'; font-size: 4em; color: white; margin: 0; line-height: 1.2;">
+                    {ansi_to_html(msg)}
+            </div>
+        """, unsafe_allow_html=True)
 
 st.markdown("---")
 st.caption("Trabalho de Algoritmos Ambiciosos - Maio 2026")

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import os
 import cli
 import engine
@@ -66,13 +67,9 @@ def main():
         print(f"\nTOTAL DE {len(symbols)} SÍMBOLOS GERADOS")
         print("-=-=-=-=-=-=-=-=-=-=-=-\n")
 
-    try:
-        resultado_final = engine.run_counter(a.input, symbols, a)
-        
-        print(resultado_final)
-
-    except Exception as e:
-        print(f"{cli.color.RED}Erro no processamento: {e}{cli.color.RESET}")
+    resultado_final = engine.run_counter(a.input, symbols, a)
+    
+    print(resultado_final)
 
 if __name__ == "__main__":
     main()

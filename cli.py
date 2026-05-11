@@ -8,16 +8,8 @@ class color:
     BOLD_END = '\033[22m'
     OVERLINE = '\033[53m'
     OVERLINE_END = '\033[55m'
-    RESET = '\033[0m'
-    UNDERLINE = '\033[4m'
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
     CROSS = '\033[9m'
+    CROSS_END = '\033[0m'
 
 def cascade(argumentos, implicacoes): # propaga implicações
     a = vars(argumentos)
@@ -81,7 +73,7 @@ notas:
     parser.add_argument('-l', '--lowercase', action='store_true', help='utiliza versões minúsculas dos símbolos (onde possível)')
     parser.add_argument('-o', '--nulla', action='store_true', help='caso a entrada for 0, imprime a palavra Nulla (o comportamento padrão é imprimir N)')
     parser.add_argument('-j', '--final-j', action='store_true', help=f'se o último símbolo inteiro for I, substitui por J\n *pode causar inconsistência com {color.BOLD}-c{color.BOLD_END}')
-    parser.add_argument('-i', '--implied-fractions', action='store_true', help=f'não imprime parte fracional, mas risca o último dígito para indicar existência da mesma (e.g {color.CROSS}I{color.RESET},{color.CROSS}M{color.RESET})\n *incompatível com {color.BOLD}-r{color.BOLD_END} e {color.BOLD}-R{color.BOLD_END}')
+    parser.add_argument('-i', '--implied-fractions', action='store_true', help=f'não imprime parte fracional, mas risca o último dígito para indicar existência da mesma (e.g {color.CROSS}I{color.CROSS_END},{color.CROSS}M{color.CROSS_END})\n *incompatível com {color.BOLD}-r{color.BOLD_END} e {color.BOLD}-R{color.BOLD_END}')
     parser.add_argument('-r', '--limited-fractions', action='store_true', help='arredonda valores fracionais a frações de 12 (Uncias)')
     parser.add_argument('-R', '--expanded-fractions', action='store_true', help='não utiliza caractéres compactos para uncias')
     parser.add_argument('-v', '--vinculum', action='store_true', help=f'utiliza notação vinculum (aka titulum) para números grandes. Inclui multiplicação por 1000\n *veja também {color.BOLD}-V{color.BOLD_END}')
@@ -113,13 +105,13 @@ notas:
     hasIncompat = checkIncompat(a, incompat)# checa se existem incompatibilidades entre flags
 
     if(hasIncompat): 
-        raise ValueError(f"Opções incompatíveis: {color.BOLD + color.RED}{"--"+hasIncompat[0]}{color.BOLD_END + color.PURPLE}, {color.BOLD + color.RED}{"--"+hasIncompat[1]}{color.BOLD_END + color.PURPLE}")
+        raise ValueError(f"Opções incompatíveis: {color.BOLD}{"--"+hasIncompat[0]}{color.BOLD_END}, {color.BOLD}{"--"+hasIncompat[1]}{color.BOLD_END}")
 
     return a
 
 def export(path, args): # exporta configurações de estilo à arquivo
     if(os.path.isdir(path)):
-        raise ValueError(f"Caminho provido para export é um diretório: {color.RED}{path}{color.PURPLE}")
+        raise ValueError(f"Caminho provido para export é um diretório: {path}")
     with open(path, 'w') as f:
         for arg, val in vars(args).items():
             if arg in not_stored : continue
