@@ -3,6 +3,7 @@ import os
 import cli
 import engine
 from symbols import *
+from datetime import datetime
 
 def getPrintable(reps, lowercase, unicode):
     """Retorna a representação correta baseada nas flags de estilo."""
@@ -40,6 +41,7 @@ def main():
     if a.export: 
         cli.export(a.export, a)
 
+    starttime = datetime.now()
     symbols = generateSymbols(
         a.apostrophus,
         a.apostrophus_special,
@@ -57,15 +59,16 @@ def main():
         a.limited_fractions,
         a.expanded_fractions
     )
-
+    totaltime = datetime.now() - starttime
 
     if a.DEBUG:
-        print("\n--- DEBUG: CONFIGURAÇÕES ATIVAS ---")
+        print("CONFIGURAÇÕES ATIVAS")
         DEBUG_PRINT_ARGUMENTS(a)
-        print("\n--- DEBUG: TABELA DE SÍMBOLOS ---")
+        print("-=-=-=-=-=-=-=-=-=-")
+        print("SÍMBOLOS")
         DEBUG_PRINT_SYMBOLS(symbols)
-        print(f"\nTOTAL DE {len(symbols)} SÍMBOLOS GERADOS")
-        print("-=-=-=-=-=-=-=-=-=-=-=-\n")
+        print(f"TOTAL DE {len(symbols)} SÍMBOLOS GERADOS EM {float(totaltime.microseconds) / 1000 :.2f}ms")
+        print("-=-=-=-=-=-=-=-=-=-")
 
     resultado_final = engine.run_counter(a.input, symbols, a)
     
