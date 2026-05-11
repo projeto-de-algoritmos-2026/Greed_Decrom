@@ -14,7 +14,7 @@ def ansi_to_html(text):
     Essencial para renderizar Vinculum (overline) e Implied Fractions (strike) na Web.
     """
    
-    text = text.replace('\033[1m', '<b">')
+    text = text.replace('\033[1m', '<b>')
     text = text.replace('\033[22m', '</b>')
 
     text = text.replace('\033[53m', '<span style="text-decoration: overline;">')
