@@ -1,145 +1,135 @@
-"""
-Módulo de Interface Gráfica para o Conversor de Algarismos Romanos.
-Este arquivo integra o motor de conversão (engine.py) com uma interface
-moderna utilizando Streamlit, focada em UX e documentação técnica.
-"""
-
 import streamlit as st
 import engine
 from symbols import generateSymbols
 
 st.set_page_config(
-    page_title="Roman Converter Pro",
+    page_title="Conversor Romano G37",
     page_icon="🏛️",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-st.markdown("""
-    <style>
-    .main { background-color: #0e1117; }
-    .stButton>button {
-        width: 100%;
-        border-radius: 5px;
-        height: 3em;
-        background-color: #FF4B4B;
-        color: white;
-    }
-    .result-card {
-        padding: 2rem;
-        border-radius: 10px;
-        background-color: #262730;
-        border-left: 5px solid #FF4B4B;
-        margin-top: 1rem;
-    }
-    .flag-desc {
-        font-size: 0.85rem;
-        color: #808495;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+def ansi_to_html(text):
+    """
+    Traduz os códigos ANSI do terminal para tags HTML/CSS.
+    Essencial para renderizar Vinculum (overline) e Implied Fractions (strike) na Web.
+    """
+   
+    text = text.replace('\033[53m', '<span style="text-decoration: overline;">')
+    text = text.replace('\033[55m', '</span>')
+    
+ 
+    text = text.replace('\033[9m', '<span style="text-decoration: line-through; color: #FF4B4B;">')
+    text = text.replace('\033[0m', '</span>')
+    
+    return text
 
+class AppFlags:
+    """Simula o objeto retornado pelo argparse para compatibilidade com o engine.py"""
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
 
-class ArgumentsMock:
-    """Simula o objeto Namespace do argparse para compatibilidade com o engine."""
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
+st.title("Conversor Romano Ambicioso")
+st.markdown("---")
 
-def main():
-    st.title("Conversor Romano Avançado")
-    st.markdown("---")
+st.sidebar.header("Configurações (Flags)")
 
+# Organizando as flags em subseções na Sidebar
+with st.sidebar.expander("Estilo e Tipografia", expanded=True):
+    u_unicode = st.checkbox("Símbolos Unicode (-u)", help="Usa caracteres latinos dedicados (Ⅰ, Ⅴ, Ⅹ...)")
+    u_lower = st.checkbox("Minúsculas (-l)", help="Retorna o resultado em caixa baixa.")
+    u_nulla = st.checkbox("Usar 'Nulla' (-o)", help="Imprime 'Nulla' em vez de 'N' para o valor zero.")
+    u_finalj = st.checkbox("Substituir final por 'J' (-j)", help="Prática antiga de trocar o último 'i' por 'j'.")
+    u_clock = st.checkbox("Símbolos de Relógio (-c)", help="Usa glifos únicos de 1 a 12 (Ⅰ-Ⅻ).")
 
-    col_input, col_settings = st.columns([1, 2])
+with st.sidebar.expander("Lógica do Algoritmo", expanded=True):
+    la_gen = st.checkbox("Forma Aditiva Geral (-a)", help="Evita formas subtrativas (ex: IIII em vez de IV).")
+    la_four = st.checkbox("4 Aditivo (IIII) (-f)")
+    la_fours = st.checkbox("4, 40, 400 Aditivos (-F)")
+    la_nine = st.checkbox("9 Aditivo (VIIII) (-n)")
+    la_nines = st.checkbox("9, 90, 900 Aditivos (-N)")
+    la_jupiter = st.checkbox("Please Jupiter (-J)", help="Usa IIII apenas se a entrada for exatamente 4.")
+    la_subs_forms = st.checkbox("Subtrações não padrão (-s)", help="Permite IC, XM, etc.")
 
-    with col_input:
-        st.subheader("Entrada de Dados")
-        decimal_val = st.number_input(
-            "Valor Decimal", 
-            min_value=0.0, 
-            value=2026.0, 
-            help="Insira o valor decimal (suporta frações unciais)."
-        )
-        
-        st.info("O algoritmo utiliza uma abordagem Gulosa (Greedy) para decompor o valor.")
+with st.sidebar.expander("Frações e Números Grandes"):
+    f_implied = st.checkbox("Frações Implicadas (-i)", help="Arredonda para cima e risca o último dígito.")
+    f_limited = st.checkbox("Frações Limitadas (Uncias) (-r)", help="Arredonda para frações de 12.")
+    n_vinc = st.checkbox("Vinculum (-v)", help="Barra superior para multiplicar por 1.000.")
+    n_vinc_l = st.checkbox("Vinculum Large (-V)", help="Multiplica por 100.000.")
+    n_apos = st.checkbox("Apostrophus (-b)", help="Notação clássica C|Ɔ.")
+    n_max = st.slider("Limite maior símbolo", 0, 10, 0, help="0 significa ilimitado.")
 
-    with col_settings:
-        st.subheader("Configurações de Algoritmo")
-        
+input_num = st.number_input("Digite o número decimal para conversão:", value=12.3, format="%.6f")
 
-        tab_style, tab_logic, tab_large = st.tabs(["Estilo", "Lógica Aditiva", "Notações Antigas"])
+# Construção do objeto de flags com todas as chaves esperadas pelo engine e symbols
+flags = AppFlags(
+    input=input_num,
+    unicode=u_unicode,
+    lowercase=u_lower,
+    nulla=u_nulla,
+    final_j=u_finalj,
+    clock=u_clock,
+    please_jupiter=la_jupiter,
+    max_largest=n_max,
+    additive=la_gen,
+    additive_long=False, 
+    additive_four=la_four,
+    additive_fours=la_fours,
+    additive_nine=la_nine,
+    additive_nines=la_nines,
+    subtractive_forms=la_subs_forms,
+    subtractive_long=False,
+    subtractive_fives=False,
+    apostrophus=n_apos,
+    apostrophus_special=False,
+    vinculum=n_vinc,
+    vinculum_large=n_vinc_l,
+    implied_fractions=f_implied,
+    limited_fractions=f_limited,
+    expanded_fractions=False,
+    DEBUG=False
+)
 
-        with tab_style:
-            c1, c2 = st.columns(2)
-            u_unicode = c1.checkbox("Símbolos Unicode (-u)", help="Usa caracteres latinos dedicados.")
-            u_lower = c1.checkbox("Minúsculas (-l)", help="Retorna i, v, x em vez de I, V, X.")
-            u_nulla = c2.checkbox("Palavra 'Nulla' (-o)", help="Substitui N por Nulla para o valor zero.")
-            u_finalj = c2.checkbox("J-Final (-j)", help="Substitui o último I por J (comum em manuscritos).")
-            u_clock = st.checkbox("Símbolos de Relógio (-c)", help="Usa Ⅰ-Ⅻ para valores entre 1 e 12.")
-
-        with tab_logic:
-            st.write("Controle de formas aditivas (IIII vs IV)")
-            la_gen = st.checkbox("Aditivo Geral (-a)")
-            la_four = st.checkbox("Somente 4 Aditivo (-f)")
-            la_nines = st.checkbox("9, 90, 900 Aditivos (-N)")
-            la_subs = st.checkbox("Subtrações Longas (IC, XM) (-s)")
-
-        with tab_large:
-            u_vinc = st.checkbox("Vinculum (-v)", help="Usa barras sobrepostas para multiplicar por 1.000.")
-            u_apos = st.checkbox("Apostrophus (-b)", help="Usa a notação clássica de C, I e Ɔ.")
-            u_max = st.number_input("Limite de Repetição (M)", 0, 10, 0)
-
-    st.markdown("---")
-    if st.button("Executar Conversão"):
-        # Mapeamento para o objeto de flags
-        args = ArgumentsMock(
-            input=decimal_val,
-            unicode=u_unicode,
-            lowercase=u_lower,
-            nulla=u_nulla,
-            final_j=u_finalj,
-            clock=u_clock,
-            please_jupiter=False, # Pode ser integrado se desejar
-            max_largest=u_max,
-            additive=la_gen,
-            additive_four=la_four,
-            additive_fours=False,
-            additive_nine=False,
-            additive_nines=la_nines,
-            subtractive_forms=la_subs,
-            subtractive_long=False,
-            subtractive_fives=False,
-            apostrophus=u_apos,
-            apostrophus_special=False,
-            vinculum=u_vinc,
-            vinculum_large=False,
-            implied_fractions=False,
-            limited_fractions=False,
-            expanded_fractions=False
+if st.button("Executar Conversão"):
+    try:
+        symbols_list = generateSymbols(
+            flags.apostrophus,
+            flags.apostrophus_special,
+            flags.vinculum,
+            flags.vinculum_large,
+            flags.additive_long,
+            flags.additive_four,
+            flags.additive_fours,
+            flags.additive_nine,
+            flags.additive_nines,
+            flags.subtractive_forms,
+            flags.subtractive_long,
+            flags.subtractive_fives,
+            flags.implied_fractions,
+            flags.limited_fractions,
+            flags.expanded_fractions
         )
 
-        try:
-         
-            symbols = generateSymbols(
-                args.apostrophus, args.apostrophus_special, args.vinculum, 
-                args.vinculum_large, False, args.additive_four, False, 
-                False, args.additive_nines, args.subtractive_forms, 
-                False, False, False, False, False
-            )
-            
-            
-            res = engine.run_counter(decimal_val, symbols, args)
-            
-         
-            st.markdown(f"""
-                <div class="result-card">
-                    <p style="margin:0; color:#808495; font-size:0.9rem;">RESULTADO DA CONVERSÃO</p>
-                    <h1 style="margin:0; color:white; font-family:serif;">{res}</h1>
-                </div>
-            """, unsafe_allow_html=True)
-            
-        except Exception as e:
-            st.error(f"Erro no processamento algorítmico: {e}")
+        resultado_raw = engine.run_counter(input_num, symbols_list, flags)
 
-if __name__ == "__main__":
-    main()
+        resultado_html = ansi_to_html(resultado_raw)
+
+        st.markdown(f"""
+            <div style="
+                background-color: #262730; 
+                padding: 30px; 
+                border-radius: 15px; 
+                border-left: 8px solid #FF4B4B;
+                margin-top: 20px;
+                text-align: center;">
+                <p style="color: #808495; font-size: 0.9em; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px;">Resultado Final</p>
+                <h1 style="font-family: 'serif'; font-size: 4em; color: white; margin: 0; line-height: 1.2;">
+                    {resultado_html}
+                </h1>
+            </div>
+        """, unsafe_allow_html=True)
+
+    except Exception as e:
+        st.error(f"Erro no processamento: {e}")
+
+st.markdown("---")
+st.caption("Trabalho de Algoritmos Ambiciosos - Maio 2026")
