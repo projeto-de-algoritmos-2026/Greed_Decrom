@@ -88,6 +88,44 @@ python ./decrom.py [numero] [flags]
 
 --DEBUG: Imprime a tabela de símbolos que o algoritmo "ambicioso" usou para aquela conversão específica.
 
+## Screenshots
+
+Menu de ajuda no CLI:
+<img width="1575" height="871" alt="image" src="https://github.com/user-attachments/assets/57db1f62-7d44-4493-941a-9b66795f33ae" />
+
+Exemplo de tabela de símbolos:
+<img width="688" height="640" alt="image" src="https://github.com/user-attachments/assets/d19206b9-2d1a-4cfc-836e-f83c14367591" />
+
+Resultado símples no CLI:
+<img width="688" height="28" alt="image" src="https://github.com/user-attachments/assets/312da4b4-3407-44a3-864b-9e8ccb4447ff" />
+
+
+Erro de incompatibilidade no CLI:
+<img width="1195" height="148" alt="image" src="https://github.com/user-attachments/assets/a754e048-fa43-425a-9e22-603a460cdb4d" />
+
+Exportação de configurações:
+<img width="814" height="858" alt="image" src="https://github.com/user-attachments/assets/98e44dce-b22d-4301-adaa-614450e43094" />
+
+Flags no GUI:
+<img width="197" height="933" alt="image" src="https://github.com/user-attachments/assets/7328b0b6-e1eb-493f-9de9-afec5a4b5c10" />
+
+Número grande (vinculum) no GUI:
+<img width="1818" height="880" alt="image" src="https://github.com/user-attachments/assets/a34f259f-971f-458b-b153-eb2e8670b6d5" />
+
+Número grande (apostrophus) no GUI:
+<img width="1813" height="676" alt="image" src="https://github.com/user-attachments/assets/db2e1420-f4b3-4096-8fc0-a394e5449082" />
+
+Número fracionário no GUI:
+<img width="1805" height="532" alt="image" src="https://github.com/user-attachments/assets/4a800063-a563-4525-af54-8ebbd4a76f7e" />
+
+Erro de incompatibilidade no GUI:
+<img width="1813" height="715" alt="image" src="https://github.com/user-attachments/assets/b47ae806-cae3-4bbf-8a7d-422056b6cb44" />
+
+
+
+
+
+
 ## Outros
 
 Tratamento de Exceções: O sistema previne estouros de repetição de caracteres através da flag --max-largest. 
