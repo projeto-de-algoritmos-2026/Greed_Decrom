@@ -1,10 +1,10 @@
-# Conversor Romano Ambicioso - Grupo 37
+# Decrom - Grupo 37
 
 **Número da Lista:** 37<br>
 **Conteúdo da Disciplina:** Algoritmos Ambiciosos (Greedy)<br>
 
 ## Apresentação
-Este projeto consiste em um motor de conversão de números decimais para algarismos romanos com alta configurabilidade. O software foi desenvolvido para suportar não apenas a numeração padrão, mas uma vasta gama de representações históricas, acadêmicas e tipográficas. Utiliza o **algorítmo de contador (Cashier's algorithm)** para montar o valor em algarismos romanos. Sendo capaz de converter de números inteiros comuns até frações com o sistema romano base-12 e números de grande escala (milhares e milhões). Esse motor pode ser acessado por interface CLI ou GUI em website local.
+Decrom (Decimal to Roman) é um conversor de números decimais para algarismos romanos com alta configurabilidade. O software foi desenvolvido para suportar não apenas a numeração padrão, mas uma vasta gama de representações históricas, acadêmicas e tipográficas. Utiliza o **algorítmo de contador (Cashier's algorithm)** para montar o valor em algarismos romanos. Sendo capaz de converter de números inteiros comuns até frações com o sistema romano base-12 e números de grande escala (milhares e milhões). Esse motor pode ser acessado por interface CLI ou GUI em website local.
 
 ## Alunos
 | Matrícula | Aluno |
