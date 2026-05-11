@@ -1,6 +1,5 @@
 import sys, subprocess
 import streamlit as st
-from symbols import generateSymbols
 from cli import export
 
 st.set_page_config(
