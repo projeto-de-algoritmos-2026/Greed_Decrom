@@ -4,7 +4,7 @@
 **Conteúdo da Disciplina:** Algoritmos Ambiciosos (Greedy)<br>
 
 ## Apresentação
-Este projeto consiste em um motor de conversão de números decimais para algarismos romanos de alta complexidade. O software foi desenvolvido para suportar não apenas a numeração padrão, mas uma vasta gama de representações históricas, acadêmicas e tipográficas. Utiliza uma abordagem de **Algoritmo Ambicioso (Greedy)** para decompor os valores, permitindo converter desde números inteiros clássicos até frações unciais (base 12) e numerações de grande escala (milhares e milhões).
+Este projeto consiste em um motor de conversão de números decimais para algarismos romanos com alta configurabilidade. O software foi desenvolvido para suportar não apenas a numeração padrão, mas uma vasta gama de representações históricas, acadêmicas e tipográficas. Utiliza o **algorítmo de contador (Cashier's algorithm)** para montar o valor em algarismos romanos. Sendo capaz de converter de números inteiros comuns até frações com o sistema romano base-12 e números de grande escala (milhares e milhões). Esse motor pode ser acessado por interface CLI ou GUI em website local.
 
 ## Alunos
 | Matrícula | Aluno |
@@ -17,7 +17,7 @@ Este projeto consiste em um motor de conversão de números decimais para algari
 ### Objetivo
 O objetivo central é demonstrar a aplicação de um algoritmo ambicioso na resolução do problema de decomposição numérica. Enquanto conversores comuns são limitados ao sistema subtrativo moderno (IV, IX, etc.), este projeto integra "flags" que alteram dinamicamente a tabela de símbolos disponível, forçando o algoritmo a tomar decisões baseadas em diferentes contextos históricos e matemáticos.
 
-### Como funciona o Algoritmo do Contador (Ambicioso)
+### Como funciona o Algoritmo do Contador (Cashier's Algorithm)
 O núcleo do sistema (no arquivo `engine.py`) implementa um **Greedy Algorithm**. A cada iteração, o algoritmo:
 1. Analisa o valor decimal atual.
 2. Varre a lista de símbolos (gerada dinamicamente pelo `symbols.py`) em ordem decrescente.
@@ -25,14 +25,18 @@ O núcleo do sistema (no arquivo `engine.py`) implementa um **Greedy Algorithm**
 4. Concatena essa peça ao resultado e subtrai seu valor do total.
 5. Repete o processo até que o resto seja zero ou o limite de precisão seja atingido.
 
+Para que seja possível utilizar o algoritmo de contador para isso, é necessária que a lista de símbolos ("moedas") inclua não só os símbolos comuns (I,X,V,C,D, etc), como também todas as subtrações entre eles (IV, IX, XC, CD, etc)
+
 ### Representações Não Padrões e Flags
 O projeto integra as seguintes lógicas integradas ao front-end:
 * **Lógica Aditiva:** Representações como `IIII` (4) e `VIIII` (9) em vez de `IV` e `IX`.
 * **Superstição (Please Jupiter):** Substituição de `IV` por `IIII` apenas quando o valor é exatamente 4, respeitando o tabu religioso romano.
-* **Notações de Grande Escala:** * **Vinculum:** Uso de barras superiores para multiplicar valores por 1.000.
-    * **Apostrophus:** Sistema clássico de `C|Ɔ` para milhares e quinhentos.
+* **Notações de Grande Escala:**
+   * **Vinculum:** Uso de barras superiores para multiplicar valores por 1.000.
+   * **Apostrophus:** Sistema clássico de `C|Ɔ` para milhares e quinhentos.
 * **Frações Unciais:** Decomposição de decimais em base 12 (Sextans, Quadrans, Semis), utilizando símbolos como pontos `·` e a letra `S`.
 * **Estética Tipográfica:** Flags para J-Final (uso de `J` no último caractere), Unicode dedicado e faces de relógio.
+* **Entre outras...**
 
 
 ## Instalação 
@@ -40,7 +44,7 @@ O projeto integra as seguintes lógicas integradas ao front-end:
 **Framework:** Streamlit (para interface web)
 
 ### Pré-requisitos
-Certifique-se de ter o Python e o gerenciador de pacotes `pip` instalados. Para instalar a biblioteca da interface web, execute:
+Certifique-se de ter o Python e o gerenciador de pacotes `pip` instalados. Para poder utilizar a interface gráfica, execute:
 
 ```bash
 pip install streamlit
@@ -59,7 +63,7 @@ streamlit run app.py
 
 Passo a passo na Interface:
 
-Sidebar: Utilize as abas "Estilo", "Lógica Aditiva" e "Notações Antigas" para configurar as regras do algoritmo.
+Sidebar: Utilize as abas laterais para configurar as regras do algoritmo.
 
 Entrada: Digite o número decimal no campo central (ex: 2026 ou 14.5).
 
@@ -72,6 +76,7 @@ Para usuários que preferem o terminal ou precisam de saídas rápidas para scri
 ```bash
 python main.py [numero] [flags]
 ```
+-h: exibe todas as opções e informações adicionais
 
 -a: Ativa a forma aditiva geral (ex: 4 = IIII).
 
