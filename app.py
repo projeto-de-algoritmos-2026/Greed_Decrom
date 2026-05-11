@@ -1,6 +1,7 @@
+import sys, subprocess
 import streamlit as st
-import engine
 from symbols import generateSymbols
+from cli import export
 
 st.set_page_config(
     page_title="Conversor Romano G37",
@@ -41,28 +42,33 @@ with st.sidebar.expander("Estilo e Tipografia", expanded=True):
     u_finalj = st.checkbox("Substituir final por 'J' (-j)", help="Prática antiga de trocar o último 'i' por 'j'.")
     u_clock = st.checkbox("Símbolos de Relógio (-c)", help="Usa glifos únicos de 1 a 12 (Ⅰ-Ⅻ).")
 
-with st.sidebar.expander("Lógica do Algoritmo", expanded=True):
-    la_gen = st.checkbox("Forma Aditiva Geral (-a)", help="Evita formas subtrativas (ex: IIII em vez de IV).")
+with st.sidebar.expander("Lógica Aditiva", expanded=False):
+    la_long = st.checkbox("Forma Aditiva Longa (-A)", help="Só utiliza símbolos potências de 10 (ex: IIIIII em vez de VI)")
+    la_gen = st.checkbox("Forma Aditiva Geral (-a)", help="Combina -F e -N")
     la_four = st.checkbox("4 Aditivo (IIII) (-f)")
     la_fours = st.checkbox("4, 40, 400 Aditivos (-F)")
     la_nine = st.checkbox("9 Aditivo (VIIII) (-n)")
     la_nines = st.checkbox("9, 90, 900 Aditivos (-N)")
     la_jupiter = st.checkbox("Please Jupiter (-J)", help="Usa IIII apenas se a entrada for exatamente 4.")
+with st.sidebar.expander("Lógica Subtrativa", expanded=False):
     la_subs_forms = st.checkbox("Subtrações não padrão (-s)", help="Permite IC, XM, etc.")
+    la_subs_fives = st.checkbox("Subtrações com cincos (-d)", help="Permite VC, LM, etc.")
+    la_subs_long = st.checkbox("Subtrações longas (-S)", help="Permite IIC, XXXM, etc.")
 
 with st.sidebar.expander("Frações e Números Grandes"):
     f_implied = st.checkbox("Frações Implicadas (-i)", help="Arredonda para cima e risca o último dígito.")
     f_limited = st.checkbox("Frações Limitadas (Uncias) (-r)", help="Arredonda para frações de 12.")
+    f_expanded = st.checkbox("Frações expandidas (-R)", help="Não utiliza caracteres compactos para Uncias")
     n_vinc = st.checkbox("Vinculum (-v)", help="Barra superior para multiplicar por 1.000.")
     n_vinc_l = st.checkbox("Vinculum Large (-V)", help="Multiplica por 100.000.")
-    n_apos = st.checkbox("Apostrophus (-b)", help="Notação clássica C|Ɔ.")
+    n_apos = st.checkbox("Apostrophus (-b)", help="Notação clássica CIƆ.")
+    n_apos_spec = st.checkbox("Apostrophus com símbolos especiais (-B)", help="Notação ↀ")
     n_max = st.slider("Limite maior símbolo", 0, 10, 0, help="0 significa ilimitado.")
 
 input_num = st.number_input("Digite o número decimal para conversão:", value=12.3, format="%.6f")
 
 # Construção do objeto de flags com todas as chaves esperadas pelo engine e symbols
 flags = AppFlags(
-    input=input_num,
     unicode=u_unicode,
     lowercase=u_lower,
     nulla=u_nulla,
@@ -71,47 +77,30 @@ flags = AppFlags(
     please_jupiter=la_jupiter,
     max_largest=n_max,
     additive=la_gen,
-    additive_long=False, 
+    additive_long=la_long, 
     additive_four=la_four,
     additive_fours=la_fours,
     additive_nine=la_nine,
     additive_nines=la_nines,
     subtractive_forms=la_subs_forms,
-    subtractive_long=False,
-    subtractive_fives=False,
+    subtractive_long=la_subs_long,
+    subtractive_fives=la_subs_fives,
     apostrophus=n_apos,
-    apostrophus_special=False,
+    apostrophus_special=n_apos_spec,
     vinculum=n_vinc,
     vinculum_large=n_vinc_l,
     implied_fractions=f_implied,
     limited_fractions=f_limited,
-    expanded_fractions=False,
-    DEBUG=False
+    expanded_fractions=f_expanded,
 )
 
 if st.button("Executar Conversão"):
     try:
-        symbols_list = generateSymbols(
-            flags.apostrophus,
-            flags.apostrophus_special,
-            flags.vinculum,
-            flags.vinculum_large,
-            flags.additive_long,
-            flags.additive_four,
-            flags.additive_fours,
-            flags.additive_nine,
-            flags.additive_nines,
-            flags.subtractive_forms,
-            flags.subtractive_long,
-            flags.subtractive_fives,
-            flags.implied_fractions,
-            flags.limited_fractions,
-            flags.expanded_fractions
-        )
-
-        resultado_raw = engine.run_counter(input_num, symbols_list, flags)
+        export('./app_estilo.txt', flags)
+        resultado_raw = subprocess.run([sys.executable, './main.py', '@app_estilo.txt', str(input_num)], capture_output=True, text=True).stdout.strip()
 
         resultado_html = ansi_to_html(resultado_raw)
+
 
         st.markdown(f"""
             <div style="
@@ -122,9 +111,8 @@ if st.button("Executar Conversão"):
                 margin-top: 20px;
                 text-align: center;">
                 <p style="color: #808495; font-size: 0.9em; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px;">Resultado Final</p>
-                <h1 style="font-family: 'serif'; font-size: 4em; color: white; margin: 0; line-height: 1.2;">
+                <p style="font-family: 'serif'; font-size: 4em; color: white; margin: 0; line-height: 1.2;">
                     {resultado_html}
-                </h1>
             </div>
         """, unsafe_allow_html=True)
 
