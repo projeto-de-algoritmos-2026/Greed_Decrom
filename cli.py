@@ -117,16 +117,14 @@ notas:
 
     return a
 
-def export(export): # exporta configurações de estilo à arquivo
-    path = a.export
+def export(path, args): # exporta configurações de estilo à arquivo
     if(os.path.isdir(path)):
-        raise ValueError(f"Caminho provido para export é um diretório: {color.RED}{a.export}{color.PURPLE}")
-    
+        raise ValueError(f"Caminho provido para export é um diretório: {color.RED}{path}{color.PURPLE}")
     with open(path, 'w') as f:
-        for arg, val in vars(a).items():
+        for arg, val in vars(args).items():
             if arg in not_stored : continue
             if arg == 'max_largest' and val != 0:
-                f.write("--" + arg.replace("_", '-') + "=" + val + "\n")
+                f.write(f"--{arg.replace("_", '-')}={val}\n")
                 continue
             if not val: continue
-            f.write("--" + arg.replace("_", "-") + "\n")
+            f.write(f"--{arg.replace("_", "-")}\n")

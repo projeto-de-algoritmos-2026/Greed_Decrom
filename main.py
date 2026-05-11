@@ -37,7 +37,7 @@ def main():
 
 
     if a.export: 
-        cli.export(a.export)
+        cli.export(a.export, a)
 
     symbols = generateSymbols(
         a.apostrophus,
