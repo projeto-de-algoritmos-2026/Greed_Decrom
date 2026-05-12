@@ -35,8 +35,10 @@ def DEBUG_PRINT_ARGUMENTS(args):
 
 def main():
 
-    # habilita cores no windows
-    os.system("")
+    # habilita cores e unicode no windows
+    if os.name == 'nt':
+        os.system("")
+        os.system("chcp 65001") 
 
     a = cli.parse_args()
 
