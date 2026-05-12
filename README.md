@@ -1,4 +1,4 @@
-# Decrom - Grupo 37
+# Decrom (Decimal to Roman)
 
 **Número da Lista:** 37<br>
 **Conteúdo da Disciplina:** Algoritmos Ambiciosos (Greedy)<br>
