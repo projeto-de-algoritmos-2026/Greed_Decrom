@@ -35,6 +35,9 @@ def DEBUG_PRINT_ARGUMENTS(args):
 
 def main():
 
+    # habilita cores no windows
+    os.system("")
+
     a = cli.parse_args()
 
 
