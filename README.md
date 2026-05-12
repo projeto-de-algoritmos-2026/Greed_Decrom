@@ -55,6 +55,8 @@ O projeto pode ser utilizado de duas maneiras distintas:
 
 ### 1. Interface Web (Recomendado):
 
+(pode ter problemas no windows)
+
 A interface gráfica oferece uma visão clara das flags e explicações sobre cada funcionalidade. Para iniciar, execute:
 
 ```bash
